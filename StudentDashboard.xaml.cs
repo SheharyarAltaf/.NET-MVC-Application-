@@ -40,8 +40,8 @@ namespace Frontend
             // Sample attendance data
             attendanceData = new List<Attendance>
             {
-                new Attendance { ClassName = "Math 101", TotalClasses = 30, AttendedClasses = 25 },
-                new Attendance { ClassName = "History 201", TotalClasses = 30, AttendedClasses = 20 },
+                new Attendance { ClassName = "science 101", TotalClasses = 30, AttendedClasses = 25 },
+                new Attendance { ClassName = "islamiyat 201", TotalClasses = 30, AttendedClasses = 20 },
                 new Attendance { ClassName = "Science 301", TotalClasses = 30, AttendedClasses = 28 }
             };
 
