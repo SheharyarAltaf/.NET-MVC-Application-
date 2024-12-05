@@ -1,0 +1,80 @@
+﻿<Window x:Class="Frontend.DashboardHomePage"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" 
+        WindowStartupLocation="CenterScreen" 
+        WindowStyle="None" 
+        AllowsTransparency="True" 
+        Background="Transparent"
+        Title="Teacher Dashboard" 
+        Height="500" 
+        Width="800">
+    <Border Background="White" CornerRadius="15" Padding="10" BorderThickness="0">
+        <Grid x:Name="MainGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.3*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Sidebar -->
+            <Border Background="#3AA9AD" Grid.Column="0" CornerRadius="0,0,10,0">
+                <StackPanel VerticalAlignment="Stretch" Margin="10">
+                    <TextBlock Text="AMS" Style="{StaticResource titleText}" Foreground="White" Margin="0,10,0,30" HorizontalAlignment="Center" />
+                    <Button Content="Dashboard" Style="{StaticResource navButton}"  Click="NavButton_Click" Margin="0,10"/>
+                    <Button Content="Add Class" Style="{StaticResource navButton}" Click="NavButton_Click" Margin="0,10"/>
+                    <Button Content="Take Attendance" Style="{StaticResource navButton}" Click="NavButton_Click" Margin="0,10"/>
+                    <Button Content="View Reports" Style="{StaticResource navButton}" Click="NavButton_Click" Margin="0,10"/>
+                    <Button  Content="Log Out" Style="{StaticResource navButton}" Click="NavButton_Click" Margin="0,10" Background="Red" Foreground="White"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Main Content -->
+            <Grid Grid.Column="1" Margin="20">
+                <StackPanel>
+                    <TextBlock Text="Welcome, [Teacher Name]" Style="{StaticResource titleText}" Foreground="#3AB19B" Margin="0,10" />
+                    <TextBlock Text="Overview" Style="{StaticResource normalText}" Opacity="0.8" Margin="0,5" />
+
+                    <!-- Statistics Panel -->
+                    <Grid Margin="0,20,0,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Background="#4EB1B6" CornerRadius="10" Margin="10">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
+                                <TextBlock Text="Total Classes" Style="{StaticResource normalText}" Foreground="White" />
+                                <TextBlock Text="5" Style="{StaticResource titleText}" Foreground="White" FontSize="36" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="#4EB1B6" CornerRadius="10" Margin="10" Grid.Column="1">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
+                                <TextBlock Text="Total Students" Style="{StaticResource normalText}" Foreground="White" />
+                                <TextBlock Text="150" Style="{StaticResource titleText}" Foreground="White" FontSize="36" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="#4EB1B6" CornerRadius="10" Margin="10" Grid.Column="2">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
+                                <TextBlock Text="Attendance %" Style="{StaticResource normalText}" Foreground="White" />
+                                <TextBlock Text="85%" Style="{StaticResource titleText}" Foreground="White" FontSize="36" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Quick Actions -->
+                    <TextBlock Text="Quick Actions" Foreground="Black" Style="{StaticResource normalText}" Opacity="0.8" Margin="0,5" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20">
+                        <Button Content="Add Class" Style="{StaticResource mainbutton}" Click="NavButton_Click" Margin="10" Width="150"/>
+                        <Button Content="Take Attendance"   Style="{StaticResource mainbutton}" Click="NavButton_Click" Margin="10" Width="150"/>
+                        <Button Content="View Reports"  Style="{StaticResource mainbutton}" Click="NavButton_Click"  Margin="10" Width="150"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

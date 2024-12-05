@@ -1,0 +1,69 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="images\4.png" />
+    <None Remove="images\5.png" />
+    <None Remove="images\background.jpeg" />
+    <None Remove="images\close.png" />
+    <None Remove="images\Email.png" />
+    <None Remove="images\Face.png" />
+    <None Remove="images\face2.png" />
+    <None Remove="images\google.png" />
+    <None Remove="images\L.png" />
+    <None Remove="images\L2.png" />
+    <None Remove="images\Lock.png" />
+    <None Remove="images\password.png" />
+    <None Remove="images\Stu.png" />
+    <None Remove="images\Stu1.png" />
+    <None Remove="images\Stu2.svg" />
+    <None Remove="images\Stu3.png" />
+    <None Remove="images\Stu4.png" />
+    <None Remove="images\Stu5.png" />
+    <None Remove="images\stu6.png" />
+    <None Remove="images\synchronize.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="images\4.png" />
+    <Resource Include="images\5.png" />
+    <Resource Include="images\background.jpeg" />
+    <Resource Include="images\close.png" />
+    <Resource Include="images\Email.png" />
+    <Resource Include="images\Face.png" />
+    <Resource Include="images\face2.png" />
+    <Resource Include="images\google.png" />
+    <Resource Include="images\L.png" />
+    <Resource Include="images\L2.png" />
+    <Resource Include="images\Lock.png" />
+    <Resource Include="images\password.png" />
+    <Resource Include="images\Stu.png" />
+    <Resource Include="images\Stu1.png" />
+    <Resource Include="images\Stu2.svg" />
+    <Resource Include="images\Stu3.png" />
+    <Resource Include="images\Stu4.png" />
+    <Resource Include="images\Stu5.png" />
+    <Resource Include="images\stu6.png" />
+    <Resource Include="images\synchronize.png" />
+  </ItemGroup>
+
+</Project>
