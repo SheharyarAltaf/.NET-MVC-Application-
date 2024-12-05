@@ -32,20 +32,13 @@
                 </StackPanel>
 
                 <!-- Student List -->
-                <DataGrid x:Name="studentDataGrid" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" Margin="10">
+                <DataGrid x:Name="studentDataGrid" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" Margin="10" CellEditEnding="studentDataGrid_CellEditEnding">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Student ID" Binding="{Binding StudentID}" Width="*"/>
                         <DataGridTextColumn Header="Student Name" Binding="{Binding StudentName}" Width="*"/>
-                        <DataGridTemplateColumn Header="Present" Width="*">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <CheckBox IsChecked="{Binding IsPresent, Mode=TwoWay}" HorizontalAlignment="Center"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                        <DataGridCheckBoxColumn Header="Present" Binding="{Binding IsPresent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
                     </DataGrid.Columns>
                 </DataGrid>
-
                 <!-- Save Button -->
                 <Button Content="Save Attendance" x:Name="btnSaveAttendance" Grid.Row="2" Height="40" Width="150" Background="#4EB1B6" 
                     Foreground="White" HorizontalAlignment="Center" Margin="10" Click="btnSaveAttendance_Click"/>

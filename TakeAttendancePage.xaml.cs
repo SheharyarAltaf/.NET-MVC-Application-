@@ -4,6 +4,8 @@ using System.Windows;
 using System.Collections.ObjectModel;
 using AWS;
 using AWS.ModelsEAD;
+using System.Windows.Controls;
+using System.ComponentModel;
 
 namespace Frontend
 {
@@ -46,28 +48,26 @@ namespace Frontend
         // Load students for the selected class
         private void LoadStudentsForClass(int classId)
         {
-            //using (var dbContext = new AwsContext())
-            //{
-            //    var studentsInClass = dbContext.Students
-            //        .Where(s => s.Classes.Any(c => c.Id == classId)) // Make sure students are part of the selected class
-            //        .Select(s => new StudentViewModel
-            //        {
-            //            StudentID = s.Id,
-            //            StudentName = s.Name,
-            //            IsPresent = false
-            //        })
-            //        .ToList();
+            using (var dbContext = new AwsContext())
+            {
+                var studentsInClass = dbContext.Registereds
+                    .Where(r => r.ClassId == classId)
+                    .Select(r => r.Student) // Assuming `Student` is a navigation property
+                    .ToList();
 
-            //    studentList.Clear(); // Clear existing list
-            //    foreach (var student in studentsInClass)
-            //    {
-            //        studentList.Add(student);
-            //    }
+                studentList.Clear();
+                foreach (var student in studentsInClass)
+                {
+                    studentList.Add(new StudentViewModel
+                    {
+                        StudentID = student.Id,
+                        StudentName = student.Name
+                    }); // Use the new constructor
+                }
 
-            //    studentDataGrid.ItemsSource = studentList; // Bind to DataGrid
-            //}
+                studentDataGrid.ItemsSource = studentList;
+            }
         }
-
         // Save attendance records to the Attendance table
         private void btnSaveAttendance_Click(object sender, RoutedEventArgs e)
         {
@@ -80,27 +80,50 @@ namespace Frontend
             int selectedClassId = (int)classDropdown.SelectedValue;
             DateOnly selectedDate = DateOnly.FromDateTime(datePicker.SelectedDate.Value);
 
-            using (var dbContext = new AwsContext())
+            try
             {
-                foreach (var student in studentList)
+                using (var dbContext = new AwsContext())
                 {
-                    var attendance = new AWS.ModelsEAD.Attendance
+                    foreach (var studentViewModel in studentList)
                     {
-                        ClassId = selectedClassId,
-                        StudentId = student.StudentID,
-                        Date = selectedDate,
-                        Status = student.IsPresent ? "Present" : "Absent"
-                    };
+                        if (studentViewModel == null)
+                        {
+                            continue; // Skip null studentViewModel
+                        }
 
-                    dbContext.Attendances.Add(attendance); // Add attendance to the database
+                        var attendance = new Attendance
+                        {
+                            ClassId = selectedClassId,
+                            StudentId = studentViewModel.StudentID,
+                            Date = selectedDate,
+                            Status = studentViewModel.IsPresent ? "Present" : "Absent"
+                        };
+
+                        dbContext.Attendances.Add(attendance);
+                    }
+
+                    dbContext.SaveChanges(); // Commit changes
                 }
 
-                dbContext.SaveChanges(); // Commit changes
+                MessageBox.Show("Attendance saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-
-            MessageBox.Show("Attendance saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while saving attendance: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
-
+        private void studentDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            if (e.Column is DataGridCheckBoxColumn && e.Row.DataContext is StudentViewModel student)
+            {
+                // Get the checkbox value directly from the EditingElement
+                var checkBox = e.EditingElement as CheckBox;
+                if (checkBox != null)
+                {
+                    student.IsPresent = checkBox.IsChecked == true; // Set IsPresent based on the checkbox state
+                }
+            }
+        }
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             var dashboardPage = new DashboardHomePage();
@@ -110,10 +133,31 @@ namespace Frontend
     }
 
     // ViewModel for Student DataGrid
-    public class StudentViewModel
+    public class StudentViewModel : INotifyPropertyChanged
     {
+        private bool _isPresent;
+
         public int StudentID { get; set; }
         public string StudentName { get; set; }
-        public bool IsPresent { get; set; }
+
+        public bool IsPresent
+        {
+            get => _isPresent;
+            set
+            {
+                if (_isPresent != value)
+                {
+                    _isPresent = value;
+                    OnPropertyChanged(nameof(IsPresent));
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }
