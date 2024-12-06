@@ -24,29 +24,46 @@ namespace Frontend
 
     public partial class DashboardHomePage : Window
     {
+        
+
         public DashboardHomePage()
         {
             InitializeComponent();
             LoadTeacherDetails();
-            LoadDashboardData();
+
+            LoadDashboardData(LoggedInUser.TeacherId);
         }
 
-        private void LoadDashboardData()
+        private void LoadDashboardData(int teacherId)
         {
             try
             {
                 using (var context = new AwsContext())
                 {
-                    // Fetch total classes
-                    int totalClasses = context.Classes.Count();
+                    // Fetch all classes for the specific teacher
+                    var teacherClasses = context.Classes.Where(c => c.TeacherId == teacherId).ToList();
 
-                    // Fetch total students
-                    int totalStudents = context.Students.Count();
+                    // Fetch total classes for the teacher
+                    int totalClasses = teacherClasses.Count;
 
-                    // Fetch attendance percentage (assuming you have an Attendance table with a Status column)
-                    int totalAttendances = context.Attendances.Count(a => a.Status == "Present");
-                    int totalPossibleAttendances = context.Attendances.Count();
-                    double attendancePercentage = (totalAttendances / (double)totalPossibleAttendances) * 100;
+                    // Fetch total students for the teacher's classes
+                    int totalStudents = context.Registereds
+                        .Where(r => teacherClasses.Select(c => c.Id).Contains(r.ClassId))
+                        .Select(r => r.StudentId)
+                        .Distinct()
+                        .Count();
+
+                    // Fetch attendance records for the teacher's classes
+                    int totalAttendances = context.Attendances
+                        .Count(a => teacherClasses.Select(c => c.Id).Contains(a.ClassId) && a.Status == "Present");
+
+                    int totalPossibleAttendances = context.Attendances
+                        .Count(a => teacherClasses.Select(c => c.Id).Contains(a.ClassId));
+
+                    // Calculate attendance percentage
+                    double attendancePercentage = totalPossibleAttendances > 0
+                        ? (totalAttendances / (double)totalPossibleAttendances) * 100
+                        : 0;
 
                     // Update the TextBlocks
                     TotalClassesTextBlock.Text = totalClasses.ToString();
