@@ -39,6 +39,7 @@
                     <TextBlock Text="Overview" Style="{StaticResource normalText}" Opacity="0.8" Margin="0,5" />
 
                     <!-- Statistics Panel -->
+                    <!-- Statistics Panel -->
                     <Grid Margin="0,20,0,20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -49,21 +50,21 @@
                         <Border Background="#4EB1B6" CornerRadius="10" Margin="10">
                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
                                 <TextBlock Text="Total Classes" Style="{StaticResource normalText}" Foreground="White" />
-                                <TextBlock Text="5" Style="{StaticResource titleText}" Foreground="White" FontSize="36" />
+                                <TextBlock x:Name="TotalClassesTextBlock" Style="{StaticResource titleText}" Foreground="White" FontSize="36" />
                             </StackPanel>
                         </Border>
 
                         <Border Background="#4EB1B6" CornerRadius="10" Margin="10" Grid.Column="1">
                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
                                 <TextBlock Text="Total Students" Style="{StaticResource normalText}" Foreground="White" />
-                                <TextBlock Text="150" Style="{StaticResource titleText}" Foreground="White" FontSize="36" />
+                                <TextBlock x:Name="TotalStudentsTextBlock" Style="{StaticResource titleText}" Foreground="White" FontSize="36" />
                             </StackPanel>
                         </Border>
 
                         <Border Background="#4EB1B6" CornerRadius="10" Margin="10" Grid.Column="2">
                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
                                 <TextBlock Text="Attendance %" Style="{StaticResource normalText}" Foreground="White" />
-                                <TextBlock Text="85%" Style="{StaticResource titleText}" Foreground="White" FontSize="36" />
+                                <TextBlock x:Name="AttendancePercentageTextBlock" Style="{StaticResource titleText}" Foreground="White" FontSize="36" />
                             </StackPanel>
                         </Border>
                     </Grid>

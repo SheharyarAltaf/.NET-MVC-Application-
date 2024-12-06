@@ -20,14 +20,45 @@ namespace Frontend
     /// <summary>
     /// Interaction logic for DashboardHomePage.xaml
     /// </summary>
+    /// 
+
     public partial class DashboardHomePage : Window
     {
         public DashboardHomePage()
         {
             InitializeComponent();
             LoadTeacherDetails();
+            LoadDashboardData();
         }
 
+        private void LoadDashboardData()
+        {
+            try
+            {
+                using (var context = new AwsContext())
+                {
+                    // Fetch total classes
+                    int totalClasses = context.Classes.Count();
+
+                    // Fetch total students
+                    int totalStudents = context.Students.Count();
+
+                    // Fetch attendance percentage (assuming you have an Attendance table with a Status column)
+                    int totalAttendances = context.Attendances.Count(a => a.Status == "Present");
+                    int totalPossibleAttendances = context.Attendances.Count();
+                    double attendancePercentage = (totalAttendances / (double)totalPossibleAttendances) * 100;
+
+                    // Update the TextBlocks
+                    TotalClassesTextBlock.Text = totalClasses.ToString();
+                    TotalStudentsTextBlock.Text = totalStudents.ToString();
+                    AttendancePercentageTextBlock.Text = attendancePercentage.ToString("F2") + "%";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading dashboard data: {ex.Message}");
+            }
+        }
         private void LoadTeacherDetails()
         {
             // Fetch teacher name, fallback to "Guest" if null
