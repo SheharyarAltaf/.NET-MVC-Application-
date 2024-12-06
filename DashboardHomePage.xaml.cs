@@ -1,4 +1,6 @@
-﻿using System;
+﻿using AWS;
+using AWS.ModelsEAD;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,19 +30,34 @@ namespace Frontend
 
         private void LoadTeacherDetails()
         {
-            // Mock teacher name, replace with actual logic to fetch from the database or API
-            string teacherName = "John Doe";
+            // Fetch teacher name, fallback to "Guest" if null
+            string teacherName = LoggedInUser.TeacherName ?? "Guest";
 
-            // Update the welcome message dynamically
-            foreach (var element in MainGrid.Children)
-            {
-                if (element is TextBlock textBlock && textBlock.Text.Contains("Welcome"))
-                {
-                    textBlock.Text = $"Welcome, {teacherName}";
-                    break;
-                }
-            }
+            // Update the TextBlock directly
+            WelcomeTextBlock.Text = $" Hey {teacherName} WELCOME, !";
         }
+
+
+        // Method to fetch teacher name from database (mocked for simplicity)
+        //private string FetchTeacherNameFromDatabase(int? teacherId)
+        //{
+        //    if (teacherId == null)
+        //        return "Guest";
+
+        //    try
+        //    {
+        //        using (var context = new AwsContext()) // Assume Entity Framework is used
+        //        {
+        //            var teacher = context.Teachers.FirstOrDefault(t => t.Id == teacherId);
+        //            return teacher?.Name;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show($"Error fetching teacher details: {ex.Message}");
+        //        return "Guest";
+        //    }
+        //}
 
         private void NavigateTo(string pageName)
         {
