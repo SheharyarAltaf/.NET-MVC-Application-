@@ -43,12 +43,12 @@ namespace Frontend
         // Initialize sample attendance data
         private void InitializeAttendanceData()
         {
-            attendanceRecords = new ObservableCollection<AttendanceRecord>
-                {
-                    new AttendanceRecord { ClassName = "Class A", Date = DateTime.Today.AddDays(-1), StudentID = "S001", StudentName = "Alice", AttendanceStatus = "Present" },
-                    new AttendanceRecord { ClassName = "Class A", Date = DateTime.Today.AddDays(-1), StudentID = "S002", StudentName = "Bob", AttendanceStatus = "Absent" },
-                    new AttendanceRecord { ClassName = "Class B", Date = DateTime.Today, StudentID = "S003", StudentName = "Charlie", AttendanceStatus = "Present" },
-                };
+            //attendanceRecords = new ObservableCollection<AttendanceRecord>
+            //    {
+            //        new AttendanceRecord { ClassName = "Class A", Date = DateTime.Today.AddDays(-1), StudentID = "S001", StudentName = "Alice", AttendanceStatus = "Present" },
+            //        new AttendanceRecord { ClassName = "Class A", Date = DateTime.Today.AddDays(-1), StudentID = "S002", StudentName = "Bob", AttendanceStatus = "Absent" },
+            //        new AttendanceRecord { ClassName = "Class B", Date = DateTime.Today, StudentID = "S003", StudentName = "Charlie", AttendanceStatus = "Present" },
+            //    };
 
             attendanceDataGrid.ItemsSource = attendanceRecords;
         }
@@ -57,7 +57,7 @@ namespace Frontend
         private async void btnFilter_Click(object sender, RoutedEventArgs e)
         {
             // Get the selected class name
-            string? selectedClass = classDropdown.SelectedItem as string;
+            string selectedClass = classDropdown.SelectedItem as string;
             DateOnly? startDate = startDatePicker.SelectedDate.HasValue ? DateOnly.FromDateTime(startDatePicker.SelectedDate.Value) : (DateOnly?)null;
             DateOnly? endDate = endDatePicker.SelectedDate.HasValue ? DateOnly.FromDateTime(endDatePicker.SelectedDate.Value) : (DateOnly?)null;
             string studentName = studentNameFilter.Text;
@@ -111,10 +111,18 @@ namespace Frontend
                         })
                         .ToListAsync();
 
-                    // Add the filtered records to the ObservableCollection
-                    foreach (var record in filteredRecords)
+                    // Check if there are no attendance records
+                    if (filteredRecords.Count == 0)
                     {
-                        attendanceRecords.Add(record);
+                        MessageBox.Show("No attendance records found for the selected class.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        // Add the filtered records to the ObservableCollection
+                        foreach (var record in filteredRecords)
+                        {
+                            attendanceRecords.Add(record);
+                        }
                     }
                 }
 
@@ -126,7 +134,7 @@ namespace Frontend
                 // Handle exceptions and show an error message
                 MessageBox.Show($"An error occurred while filtering records: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }        // Export attendance records to CSV
+        }               // Export attendance records to CSV
         private void btnExport_Click(object sender, RoutedEventArgs e)
         {
             var filteredRecords = (IEnumerable<AttendanceRecord>)attendanceDataGrid.ItemsSource;
