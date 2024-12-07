@@ -1,4 +1,6 @@
-﻿using System;
+﻿using AWS.ModelsEAD;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -19,11 +21,25 @@ namespace Frontend
             // Initialize sample data
             InitializeAttendanceData();
 
+            LoadClasses(); // Load classes from the database
+            attendanceRecords = new ObservableCollection<AttendanceRecord>(); // Initialize the collection
+            attendanceDataGrid.ItemsSource = attendanceRecords;
             // Populate class dropdown
             var classNames = attendanceRecords.Select(r => r.ClassName).Distinct().ToList();
             classDropdown.ItemsSource = classNames;
         }
 
+        private async void LoadClasses()
+        {
+            using (var context = new AwsContext())
+            {
+                var classNames = await context.Classes
+                    .Select(c => c.ClassName)
+                    .ToListAsync();
+
+                classDropdown.ItemsSource = classNames;
+            }
+        }
         // Initialize sample attendance data
         private void InitializeAttendanceData()
         {
@@ -38,24 +54,79 @@ namespace Frontend
         }
 
         // Filter attendance records
-        private void btnFilter_Click(object sender, RoutedEventArgs e)
+        private async void btnFilter_Click(object sender, RoutedEventArgs e)
         {
-            string selectedClass = classDropdown.SelectedItem as string;
-            DateTime? startDate = startDatePicker.SelectedDate;
-            DateTime? endDate = endDatePicker.SelectedDate;
+            // Get the selected class name
+            string? selectedClass = classDropdown.SelectedItem as string;
+            DateOnly? startDate = startDatePicker.SelectedDate.HasValue ? DateOnly.FromDateTime(startDatePicker.SelectedDate.Value) : (DateOnly?)null;
+            DateOnly? endDate = endDatePicker.SelectedDate.HasValue ? DateOnly.FromDateTime(endDatePicker.SelectedDate.Value) : (DateOnly?)null;
             string studentName = studentNameFilter.Text;
 
-            var filteredRecords = attendanceRecords.Where(record =>
-                (string.IsNullOrEmpty(selectedClass) || record.ClassName == selectedClass) &&
-                (!startDate.HasValue || record.Date >= startDate) &&
-                (!endDate.HasValue || record.Date <= endDate) &&
-                (string.IsNullOrEmpty(studentName) || record.StudentName.IndexOf(studentName, StringComparison.OrdinalIgnoreCase) >= 0)
-            ).ToList();
+            // Check if a class is selected
+            if (string.IsNullOrEmpty(selectedClass))
+            {
+                MessageBox.Show("Please select a class.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
-            attendanceDataGrid.ItemsSource = filteredRecords;
-        }
+            // Clear existing records
+            attendanceRecords.Clear();
 
-        // Export attendance records to CSV
+            try
+            {
+                using (var context = new AwsContext())
+                {
+                    // Build the query
+                    var query = context.Attendances
+                        .Include(a => a.Class) // Include Class navigation property
+                        .Include(a => a.Student) // Include Student navigation property
+                        .Where(a => a.Class.ClassName == selectedClass);
+
+                    // Apply date filters if provided
+                    if (startDate.HasValue)
+                    {
+                        query = query.Where(a => a.Date >= startDate.Value); // Compare DateOnly directly
+                    }
+
+                    if (endDate.HasValue)
+                    {
+                        query = query.Where(a => a.Date <= endDate.Value); // Compare DateOnly directly
+                    }
+
+                    // Apply student name filter if provided
+                    if (!string.IsNullOrEmpty(studentName))
+                    {
+                        query = query.Where(a => a.Student.Name.Contains(studentName));
+                    }
+
+                    // Execute the query and select the results
+                    var filteredRecords = await query
+                        .Select(a => new AttendanceRecord
+                        {
+                            ClassName = a.Class.ClassName,
+                            Date = a.Date.ToDateTime(new TimeOnly(0, 0)), // Convert DateOnly to DateTime for display
+                            StudentID = a.Student.Id.ToString(),
+                            StudentName = a.Student.Name,
+                            AttendanceStatus = a.Status
+                        })
+                        .ToListAsync();
+
+                    // Add the filtered records to the ObservableCollection
+                    foreach (var record in filteredRecords)
+                    {
+                        attendanceRecords.Add(record);
+                    }
+                }
+
+                // Update the DataGrid's ItemsSource
+                attendanceDataGrid.ItemsSource = attendanceRecords;
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions and show an error message
+                MessageBox.Show($"An error occurred while filtering records: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }        // Export attendance records to CSV
         private void btnExport_Click(object sender, RoutedEventArgs e)
         {
             var filteredRecords = (IEnumerable<AttendanceRecord>)attendanceDataGrid.ItemsSource;
@@ -98,10 +169,13 @@ namespace Frontend
 
     public class AttendanceRecord
     {
-        public string ClassName { get; set; }
+        public required string ClassName { get; set; }
         public DateTime Date { get; set; }
-        public string StudentID { get; set; }
-        public string StudentName { get; set; }
-        public string AttendanceStatus { get; set; }
+        public required string StudentID { get; set; }
+        public required string StudentName { get; set; }
+        public required string AttendanceStatus { get; set; }
     }
+
+    
+
 }
