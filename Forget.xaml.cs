@@ -1,6 +1,8 @@
-﻿using System;
+﻿using AWS.ModelsEAD;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+//using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -27,7 +29,7 @@ namespace Frontend
         private void RemovePlaceholder(object sender, RoutedEventArgs e)
         {
             var textBox = sender as TextBox;
-            if (textBox != null && textBox.Text == "Student ID")
+            if (textBox != null && textBox.Text == "Email")
             {
                 textBox.Text = string.Empty;
                 textBox.Foreground = new SolidColorBrush(Colors.Black);
@@ -39,7 +41,7 @@ namespace Frontend
             var textBox = sender as TextBox;
             if (textBox != null && string.IsNullOrWhiteSpace(textBox.Text))
             {
-                textBox.Text = "Student ID";
+                textBox.Text = "Email";
                 textBox.Foreground = new SolidColorBrush(Colors.Gray);
             }
         }
@@ -83,7 +85,7 @@ namespace Frontend
             PasswordMismatchError.Visibility = Visibility.Collapsed;
 
             // Check if the Student ID field is empty
-            if (string.IsNullOrWhiteSpace(StudentIDTextBox.Text) || StudentIDTextBox.Text == "Student ID")
+            if (string.IsNullOrWhiteSpace(StudentIDTextBox.Text) || StudentIDTextBox.Text == "Email")
             {
                 // Show the error message if the Student ID is not entered or still has placeholder text
                 StudentIDError.Visibility = Visibility.Visible;
@@ -100,13 +102,64 @@ namespace Frontend
                 {
                     // Hide password mismatch error if passwords match
                     PasswordMismatchError.Visibility = Visibility.Collapsed;
+                    try
+                    {
+                        // Proceed with password reset logic here
+                        using (var context = new AwsContext())
+                        {
+                            // Check if the email exists in the Student table
+                            var student = context.Students.SingleOrDefault(s => s.Email == StudentIDTextBox.Text);
+                            if (student != null)
+                            {
+                                // Update the password (make sure to hash it if necessary)
+                                student.Password = (NewPasswordBox.Password); // Implement HashPassword method
+                                context.SaveChanges();
 
-                    // Proceed with password reset logic here
-                    MessageBox.Show("Password reset successful!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
+                                MainWindow mainWindow = new MainWindow("Student's Password Reset Successfully!");
+                                mainWindow.Show();
+                                this.Close();
+                            }
+                            
+
+                            // Check if the email exists in the Teacher table
+                            var teacher = context.Teachers.SingleOrDefault(t => t.Email == StudentIDTextBox.Text);
+                            if (teacher != null)
+                            {
+                                // Update the password (make sure to hash it if necessary)
+                                teacher.Password = (NewPasswordBox.Password); // Implement HashPassword method
+                                context.SaveChanges();
+
+                                MainWindow mainWindow = new MainWindow("Teacher's Password Reset Successfully!");
+                                mainWindow.Show();
+                                this.Close();
+                            }
+                            
+                            
+                                // If email not found in both tables
+
+                       MessageBox.Show("Email not found in the system.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle exceptions and show an error message
+                        MessageBox.Show($"An error occurred while filtering records: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                
+               } 
             }
         }
 
+
+        //private string HashPassword(string password)
+        //{
+        //    using (var sha256 = SHA256.Create())
+        //    {
+        //        var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+        //        return Convert.ToBase64String(bytes);
+        //    }
+        //}
 
 
 
@@ -123,5 +176,11 @@ namespace Frontend
             }
         }
 
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow mainWindow = new MainWindow(); // Replace with your actual page class
+            mainWindow.Show();
+            this.Close();
+        }
     }
 }
