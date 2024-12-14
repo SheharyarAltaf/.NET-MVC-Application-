@@ -109,7 +109,7 @@ namespace Frontend
         //    }
         //}
 
-        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        private void RadioButton_Checked(object sender, RoutedEventArgs? e)
         {
             if (rbStudent.IsChecked == true)
             {
@@ -187,61 +187,77 @@ namespace Frontend
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            if (txt_email.Text != "" && txt_fullname.Text != "" && txt_pass.Password != "" && txt_cpass.Password != "")
+            if (string.IsNullOrWhiteSpace(txt_email.Text) ||
+                string.IsNullOrWhiteSpace(txt_fullname.Text) ||
+                string.IsNullOrWhiteSpace(txt_pass.Password) ||
+                string.IsNullOrWhiteSpace(txt_cpass.Password))
             {
-                if (txt_pass.Password == txt_cpass.Password)
+                txt_error.Text = "Please fill all the fields.";
+                return;
+            }
+
+            if (txt_pass.Password != txt_cpass.Password)
+            {
+                txt_error.Text = "Passwords do not match.";
+                return;
+            }
+
+            try
+            {
+                using (var context = new AwsContext())
                 {
+                    // Check if the email already exists in Students or Teachers table
+                    bool emailExistsInStudents = context.Students.Any(s => s.Email == txt_email.Text);
+                    bool emailExistsInTeachers = context.Teachers.Any(t => t.Email == txt_email.Text);
+
+                    if (emailExistsInStudents || emailExistsInTeachers)
+                    {
+                        txt_error.Text = "A user with this email already exists.";
+                        return;
+                    }
+
+                    // Proceed with the registration process
                     if (rbStudent.IsChecked == true)
                     {
-                        AWS.ModelsEAD.Student student = new AWS.ModelsEAD.Student();
-
-                        student.Email = txt_email.Text;
-                        student.Name = txt_fullname.Text;
-                        student.Password = txt_pass.Password;
-
-                        using (var context = new AwsContext())
+                        AWS.ModelsEAD.Student student = new AWS.ModelsEAD.Student
                         {
-                            context.Students.Add(student);
-                            context.SaveChanges();
-                            MainWindow mainWindow = new MainWindow("Student Registered Successfully!");
-                            mainWindow.Show();
-                            this.Close();
-                        }
+                            Email = txt_email.Text,
+                            Name = txt_fullname.Text,
+                            Password = txt_pass.Password
+                        };
 
+                        context.Students.Add(student);
+                        context.SaveChanges();
+
+                        MainWindow mainWindow = new MainWindow("Student Registered Successfully!");
+                        mainWindow.Show();
+                        this.Close();
                     }
                     else if (rbTeacher.IsChecked == true)
                     {
-                        AWS.ModelsEAD.Teacher teacher = new AWS.ModelsEAD.Teacher();
-
-                        teacher.Email = txt_email.Text;
-                        teacher.Name = txt_fullname.Text;
-                        teacher.Password = txt_pass.Password;
-
-                        using (var context = new AwsContext())
+                        AWS.ModelsEAD.Teacher teacher = new AWS.ModelsEAD.Teacher
                         {
-                            context.Teachers.Add(teacher);
-                            context.SaveChanges();
+                            Email = txt_email.Text,
+                            Name = txt_fullname.Text,
+                            Password = txt_pass.Password
+                        };
 
-                            MainWindow mainWindow = new MainWindow("Teacher Registered Successfully");
-                            mainWindow.Show();
-                            this.Close();
+                        context.Teachers.Add(teacher);
+                        context.SaveChanges();
 
-                        }
-
+                        MainWindow mainWindow = new MainWindow("Teacher Registered Successfully!");
+                        mainWindow.Show();
+                        this.Close();
                     }
                     else
                     {
-                        txt_error.Text = "Please select a role";
+                        txt_error.Text = "Please select a role.";
                     }
                 }
-                else
-                {
-                    txt_error.Text = "Password does not match";
-                }
             }
-            else
+            catch (Exception ex)
             {
-                txt_error.Text = "Please fill all the fields";
+                txt_error.Text = $"An error occurred: {ex.Message}";
             }
         }
 
