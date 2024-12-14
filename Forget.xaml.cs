@@ -109,7 +109,7 @@ namespace Frontend
                         using (var context = new AwsContext())
                         {
                             // Check if the email exists in the Student table
-                            var student = context.Students.SingleOrDefault(s => s.Email == StudentIDTextBox.Text);
+                            var student = context.Students.FirstOrDefault(s => s.Email == StudentIDTextBox.Text);
                             if (student != null)
                             {
                                 // Update the password (make sure to hash it if necessary)
@@ -123,7 +123,7 @@ namespace Frontend
                             
 
                             // Check if the email exists in the Teacher table
-                            var teacher = context.Teachers.SingleOrDefault(t => t.Email == StudentIDTextBox.Text);
+                            var teacher = context.Teachers.FirstOrDefault(t => t.Email == StudentIDTextBox.Text);
                             if (teacher != null)
                             {
                                 // Update the password (make sure to hash it if necessary)
