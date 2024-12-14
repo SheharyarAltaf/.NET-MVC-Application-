@@ -104,6 +104,7 @@ namespace Frontend
                     PasswordMismatchError.Visibility = Visibility.Collapsed;
                     try
                     {
+
                         // Proceed with password reset logic here
                         using (var context = new AwsContext())
                         {
