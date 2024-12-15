@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Artboard-1.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,6 +30,10 @@
     <None Remove="images\Stu5.png" />
     <None Remove="images\stu6.png" />
     <None Remove="images\synchronize.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Artboard-1.ico" />
   </ItemGroup>
 
   <ItemGroup>

@@ -67,7 +67,7 @@
                     <TextBlock Name="txt_error" 
                                 
                                Foreground="Red" 
-                               
+                               FontSize="12"
                                HorizontalAlignment="Center"           
                                Margin="5,2,0,0"/>
 
